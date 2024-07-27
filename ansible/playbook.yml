@@ -1,0 +1,52 @@
+- hosts: webservers
+  become: true
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install basic packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nginx
+        - ufw
+        - fail2ban
+
+    - name: Configure UFW to allow OpenSSH and Nginx Full
+      ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop:
+        - OpenSSH
+        - "Nginx Full"
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Configure fail2ban
+      copy:
+        src: /etc/fail2ban/jail.conf
+        dest: /etc/fail2ban/jail.local
+      notify:
+        - restart fail2ban
+
+    - name: Deploy HTML file
+      template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+
+    - name: Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart fail2ban
+      service:
+        name: fail2ban
+        state: restarted

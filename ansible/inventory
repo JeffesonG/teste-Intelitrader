@@ -1,0 +1,2 @@
+[webservers]
+web ansible_host={{ output.instance_ip.value }} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/key-chave.pem

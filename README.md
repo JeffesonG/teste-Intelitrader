@@ -1,64 +1,69 @@
-# Infra Challenge 20240202
+# Infraestrutura Automatizada com Terraform e Ansible
 
-## Introdução
+Este projeto configura uma infraestrutura na AWS utilizando Terraform e Ansible para automatizar a configuração de servidores EC2 e a instalação de software básico, incluindo Nginx para servir uma página web estática.
 
-Este é um teste para que possamos ver as suas habilidades como DevOps.
+## Tecnologias Utilizadas
 
-Nesse teste você deverá configurar um servidor, aplicar os principais recursos de segurança e trabalhar com Infra as Code
-
-[SPOILER] As instruções de entrega e apresentação do challenge estão no final deste Readme (=
-
-### Antes de começar
- 
-- Considere como deadline da avaliação a partir do início do teste. Caso tenha sido convidado a realizar o teste e não seja possível concluir dentro deste período, avise a pessoa que o convidou para receber instruções sobre o que fazer.
-- Documentar todo o processo de investigação para o desenvolvimento da atividade (README.md no seu repositório); os resultados destas tarefas são tão importantes do que o seu processo de pensamento e decisões à medida que as completa, por isso tente documentar e apresentar os seus hipóteses e decisões na medida do possível.
-
-
-## **Parte 1 - Configuração do Servidor**
-
-A sua tarefa consiste em configurar um servidor baseado na nuvem e instalar e configurar alguns componentes básicos.
-
-
-1. Configurar grupo de segurança na AWS
-2. Configuração da redes para o Servidor
-3. Configurar um servidor AWS (recomenda-se o freetier) executando uma versão Ubuntu LTS.
-4. Instalar e configurar qualquer software que você recomendaria em uma configuração de servidor padrão sob as perspectivas de segurança, desempenho, backup e monitorização.
-5. Instalar e configurar o nginx para servir uma página web HTML estática.
-
-
-
-## **Part 2 – Infra as Code**
-
-Como diferencial, você poderá configurar toda a infra-estrutura com ferramentas como:
-
-- Ansible
 - Terraform
-- AWS CDK ou CloudFormation
+- Ansible
+- Nginx
+- GitHub Actions
+- AWS EC2
+- Ubuntu LTS
 
-Ao ter o projeto executando em um servidor e aplicando as melhores práticas de segurança com grupos de segurança e as configurações de rede criando completamente por código.
+## Como Instalar e Usar o Projeto
+
+### Pré-requisitos
+
+- Conta na AWS com permissões para criar recursos (EC2, VPC, Security Groups, etc.).
+- Chave SSH configurada na AWS.
+- Terraform instalado na máquina local.
+- Ansible instalado na máquina local.
+- GitHub Actions configurado com os seguintes secrets:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `ANSIBLE_PRIVATE_KEY`
+  - `ANSIBLE_HOST`
+  - `ANSIBLE_USER`
+
+### Passos para Instalação
+
+1. Clone o repositório:
+
+    ```sh
+    git clone https://github.com/JeffesonG/teste-Intelitrader
+    cd teste-Intelitrader
+    ```
+
+2. Inicialize o Terraform e aplique a configuração:
+
+    ```sh
+    cd terraform
+    terraform init
+    terraform apply -auto-approve
+    ```
+
+3. Obtenha o IP público da instância EC2 criada e adicione-o aos secrets do GitHub (`ANSIBLE_HOST`).
+
+4. Atualize o inventário do Ansible com o IP público da instância EC2:
+
+    ```sh
+    echo "[webservers]" > ansible/inventory
+    echo "web ansible_host=<IP_PUBLICO> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem" >> ansible/inventory
+    ```
+
+5. Execute o playbook do Ansible:
+
+    ```sh
+    cd ansible
+    ansible-playbook -i inventory playbook.yml
+    ```
+
+### Automatização com GitHub Actions
+
+O repositório está configurado para usar GitHub Actions para automatizar a infraestrutura e configuração do servidor. Cada push na branch `main` acionará o workflow de CI/CD definido em `.github/workflows/main.yml`.
 
 
-## **Part 3 – Continuous Delivery**
 
-Desenhar e construir uma pipeline para apoiar a entrega contínua da aplicação de monitorização construída na Parte 2 no servidor configurado na Parte 1. Descrever a pipeline utilizando um diagrama de fluxo e explicar o objetivo e o processo de seleção usado em cada uma das ferramentas e técnicas específicas que compõem a sua pipeline. 
-
-## Readme do Repositório
-
-- Deve conter o título do projeto
-- Uma descrição sobre o projeto em frase
-- Deve conter uma lista com linguagem, framework e/ou tecnologias usadas
-- Como instalar e usar o projeto (instruções)
-- Não esqueça o [.gitignore](https://www.toptal.com/developers/gitignore)
-- Se está usando github pessoal, referencie que é um challenge by coodesh:  
 
 >  This is a challenge by [Coodesh](https://coodesh.com/)
-
-## Finalização e Instruções para a Apresentação
-
-1. Adicione o link do repositório com a sua solução no teste
-2. Verifique se o Readme está bom e faça o commit final em seu repositório;
-3. Envie e aguarde as instruções para seguir. Sucesso e boa sorte. =)
-
-## Suporte
-
-Use a [nossa comunidade](https://discord.gg/rdXbEvjsWu) para tirar dúvidas sobre o processo ou envie uma mensagem diretamente a um especialista no chat da plataforma. 
